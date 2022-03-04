@@ -1,0 +1,36 @@
+# version: "3.7"
+# services:
+#   frontend_app:
+#     build:
+#       context: ./frontend/app
+#       dockerfile: "Dockerfile"
+#     container_name: ppa-app
+#     command: ["sh", "-c", "npm run start & nginx -g 'daemon off;'"]
+#     ports:
+#       - "80:3000"
+#     volumes:
+#       - ./frontend/app:/app
+#       - /app/node_modules
+#       - /app/.next
+#     restart: always
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: argocd-react
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: argocd-react
+  template:
+    metadata:
+      labels:
+        app: argocd-react
+    spec:
+      containers:
+        - name: argocd-react
+          image: chanithadocker/argo_react_docker
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
