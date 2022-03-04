@@ -1,18 +1,12 @@
-FROM node:15.7.0-alpine AS build
-RUN apk add --no-cache libc6-compat
+# base image
+FROM --platform=linux/amd64 node:alpine
+# set working directory
 WORKDIR /app
-COPY .npmrc ./
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-COPY . .
-RUN yarn build
-
-FROM localcool/nginx-brotli:latest
-RUN apk add --update nodejs nodejs-npm
-WORKDIR /app
-COPY default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app /app
-
+# install and cache app dependencies
+COPY package.json ./
+# COPY yarn.lock ./
+# RUN yarn install
 EXPOSE 3000
-
-CMD ["sh","-c","npm run start & nginx -g 'daemon off;'"]
+COPY . ./
+# start app
+CMD ["npm", "start"]
